@@ -9,8 +9,7 @@ import (
 )
 
 const (
-	//mycli -utest -p 123456 -h120.26.137.224 -P 23306 teamtalk
-	mysql_url string = "test:123456@tcp(120.26.137.224:23306)/teamtalk"
+	mysql_url string = "test:123456@tcp(120.26.137.224:3306)/teamtalk"
 )
 
 var m *DBManager
