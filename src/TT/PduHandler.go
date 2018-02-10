@@ -39,6 +39,7 @@ func (client *ClientConn) handlePdu(pdu ImPduBase.ImPdu) {
 		out, _ := json.Marshal(msg)
 		log.Println("Get user list info")
 		log.Println(string(out))
+
 	case int32(IM_BaseDefine.MessageCmdID_CID_MSG_UNREAD_CNT_RESPONSE):
 		msg := &IM_Message.IMUnreadMsgCntRsp{}
 		proto.Unmarshal(pdu.GetMsgData(), msg)
@@ -54,6 +55,6 @@ func (client *ClientConn) handlePdu(pdu ImPduBase.ImPdu) {
 		log.Println(string(out))
 
 	default:
-		log.Fatal("Invalid commdd id ", pdu.GetCommandId())
+		log.Println("Invalid commdd id ", pdu.GetCommandId())
 	}
 }

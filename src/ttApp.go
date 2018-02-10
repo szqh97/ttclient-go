@@ -2,18 +2,21 @@ package main
 
 import (
 	"./TT"
-	"fmt"
+	"flag"
+	"log"
 	"os"
 	"os/signal"
 )
 
-func main() {
+var username = flag.String("username", "dj352801", "tt username")
+
+func Main(user string) {
 	exitChan := make(chan os.Signal)
 	signal.Notify(exitChan)
 
 	ip, port, _ := TT.GetMsgServerAddress()
 	msgaddr := ip + ":" + port
-	client := TT.NewClientConn(msgaddr, "dj352801")
+	client := TT.NewClientConn(msgaddr, user)
 	client.Login()
 	client.CheckLoIn()
 
@@ -24,6 +27,13 @@ func main() {
 
 	select {
 	case <-exitChan:
-		fmt.Println("exiting ... ")
+		log.Println("exiting ... ")
 	}
+}
+
+func main() {
+	flag.Parse()
+
+	Main(*username)
+
 }

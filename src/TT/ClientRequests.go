@@ -5,6 +5,7 @@ import (
 	"../IM/IM_Buddy"
 	"../IM/IM_Login"
 	"../IM/IM_Message"
+	"../IM/IM_Other"
 	"../ImPduBase"
 	"github.com/golang/protobuf/proto"
 	"log"
@@ -12,6 +13,21 @@ import (
 
 func (client *ClientConn) request(pdu *ImPduBase.ImPdu) {
 	client.pduReceiveChan <- pdu
+}
+
+func (client *ClientConn) heartbeat() {
+	msg := IM_Other.IMHeartBeat{}
+	out, err := proto.Marshal(&msg)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	var pdu ImPduBase.ImPdu
+	pdu.Reset()
+	pdu.SetServiceId(int32(IM_BaseDefine.OtherCmdID_CID_OTHER_HEARTBEAT))
+	pdu.SetCommandId(int32(IM_BaseDefine.OtherCmdID_CID_OTHER_HEARTBEAT))
+	pud.SetMsgData(out)
+	client.request(&pdu)
 }
 
 func (client *ClientConn) Login() {
@@ -45,7 +61,7 @@ func (client *ClientConn) GetRecentSession(ts uint32) {
 	}
 	out, err := proto.Marshal(&msg)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return
 	}
 
@@ -66,7 +82,7 @@ func (client *ClientConn) GetUserInfoList(user_id_list []uint32) {
 	}
 	out, err := proto.Marshal(&msg)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return
 	}
 
@@ -118,5 +134,4 @@ func (client *ClientConn) GetMsgList(s_id, msgid, cnt uint32) {
 
 	log.Println("get msg list request")
 	client.request(&pdu)
-
 }

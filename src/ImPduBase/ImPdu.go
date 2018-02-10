@@ -108,17 +108,17 @@ func HeaderDecode(buf []byte, h *Header) error {
 
 func Decode(buf []byte, p *ImPdu) error {
 	if len(buf) < HeaderLen {
-		log.Fatal("buf Length is invalid")
+		log.Println("buf Length is invalid")
 		return errors.New("buf Length is invalid")
 	}
 	var h Header
 	err := HeaderDecode(buf[:16], &h)
 	if err != nil {
-		log.Fatal("dencode header failed")
+		log.Println("dencode header failed")
 		return err
 	}
 	if len(buf) < int(h.Length) {
-		log.Fatal("msg is truncated!")
+		log.Println("msg is truncated!")
 		return errors.New("msg body is truncated!")
 	}
 
@@ -140,7 +140,7 @@ func ImPduReader(reader io.Reader, pdu *ImPdu) error {
 		data := make([]byte, 1024)
 		cnt, err := reader.Read(data)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 			return err
 		}
 		fullBuf.Write(data[:cnt])

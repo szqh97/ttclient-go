@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"time"
 )
 
 type ClientConn struct {
@@ -89,7 +90,10 @@ func (client *ClientConn) handleLoop() {
 		select {
 		case pdu := <-client.pduSenderChan:
 			client.handlePdu(*pdu)
+		case <-time.After(time.Second * 30):
+			client.heartbeat()
 		default:
+			log.Fatal("unkonw loop...")
 		}
 	}
 }
