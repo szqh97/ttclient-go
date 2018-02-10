@@ -5,11 +5,12 @@ import (
 	"../IM/IM_Buddy"
 	"../IM/IM_Login"
 	"../IM/IM_Message"
+	"../ImPduBase"
 	"github.com/golang/protobuf/proto"
 	"log"
 )
 
-func (client *ClientConn) request(pdu *ImPdu) {
+func (client *ClientConn) request(pdu *ImPduBase.ImPdu) {
 	client.pduReceiveChan <- pdu
 }
 
@@ -27,11 +28,14 @@ func (client *ClientConn) Login() {
 	if err != nil {
 		log.Println(err)
 	}
-	pdu := NewImPdu(uint16(IM_BaseDefine.ServiceID_SID_LOGIN),
-		uint16(IM_BaseDefine.LoginCmdID_CID_LOGIN_REQ_USERLOGIN), out)
-	log.Println("login request...")
+	var pdu ImPduBase.ImPdu
+	pdu.Reset()
+	pdu.SetServiceId(int32(IM_BaseDefine.ServiceID_SID_LOGIN))
+	pdu.SetCommandId(int32(IM_BaseDefine.LoginCmdID_CID_LOGIN_REQ_USERLOGIN))
+	pdu.SetMsgData(out)
+	log.Println("login request...", pdu)
 
-	client.pduReceiveChan <- pdu
+	client.pduReceiveChan <- &pdu
 }
 
 func (client *ClientConn) GetRecentSession(ts uint32) {
@@ -44,10 +48,15 @@ func (client *ClientConn) GetRecentSession(ts uint32) {
 		log.Fatal(err)
 		return
 	}
-	pdu := NewImPdu(uint16(IM_BaseDefine.ServiceID_SID_BUDDY_LIST),
-		uint16(IM_BaseDefine.BuddyListCmdID_CID_BUDDY_LIST_RECENT_CONTACT_SESSION_REQUEST), out)
+
+	var pdu ImPduBase.ImPdu
+	pdu.Reset()
+	pdu.SetServiceId(int32(IM_BaseDefine.ServiceID_SID_BUDDY_LIST))
+	pdu.SetCommandId(int32(IM_BaseDefine.BuddyListCmdID_CID_BUDDY_LIST_RECENT_CONTACT_SESSION_REQUEST))
+	pdu.SetMsgData(out)
+
 	log.Println("get recent session")
-	client.pduReceiveChan <- pdu
+	client.pduReceiveChan <- &pdu
 }
 
 func (client *ClientConn) GetUserInfoList(user_id_list []uint32) {
@@ -60,10 +69,15 @@ func (client *ClientConn) GetUserInfoList(user_id_list []uint32) {
 		log.Fatal(err)
 		return
 	}
-	pdu := NewImPdu(uint16(IM_BaseDefine.ServiceID_SID_BUDDY_LIST),
-		uint16(IM_BaseDefine.BuddyListCmdID_CID_BUDDY_LIST_USER_INFO_REQUEST), out)
+
+	var pdu ImPduBase.ImPdu
+	pdu.Reset()
+	pdu.SetServiceId(int32(IM_BaseDefine.ServiceID_SID_BUDDY_LIST))
+	pdu.SetCommandId(int32(IM_BaseDefine.BuddyListCmdID_CID_BUDDY_LIST_USER_INFO_REQUEST))
+	pdu.SetMsgData(out)
+
 	log.Println("get user info list request")
-	client.request(pdu)
+	client.request(&pdu)
 }
 
 func (client *ClientConn) GetUnreadMsgCnt(nReqSubId uint32) {
@@ -73,10 +87,15 @@ func (client *ClientConn) GetUnreadMsgCnt(nReqSubId uint32) {
 	}
 	out, err := proto.Marshal(&msg)
 	checkErr(err)
-	pdu := NewImPdu(uint16(IM_BaseDefine.ServiceID_SID_MSG),
-		uint16(IM_BaseDefine.MessageCmdID_CID_MSG_UNREAD_CNT_REQUEST), out)
+
+	var pdu ImPduBase.ImPdu
+	pdu.Reset()
+	pdu.SetServiceId(int32(IM_BaseDefine.ServiceID_SID_MSG))
+	pdu.SetCommandId(int32(IM_BaseDefine.MessageCmdID_CID_MSG_UNREAD_CNT_REQUEST))
+	pdu.SetMsgData(out)
+
 	log.Println("get unread msg count")
-	client.request(pdu)
+	client.request(&pdu)
 }
 
 func (client *ClientConn) GetMsgList(s_id, msgid, cnt uint32) {
@@ -90,9 +109,14 @@ func (client *ClientConn) GetMsgList(s_id, msgid, cnt uint32) {
 	}
 	out, err := proto.Marshal(&msg)
 	checkErr(err)
-	pdu := NewImPdu(uint16(IM_BaseDefine.ServiceID_SID_MSG),
-		uint16(IM_BaseDefine.MessageCmdID_CID_MSG_LIST_REQUEST), out)
+
+	var pdu ImPduBase.ImPdu
+	pdu.Reset()
+	pdu.SetServiceId(int32(IM_BaseDefine.ServiceID_SID_MSG))
+	pdu.SetCommandId(int32(IM_BaseDefine.MessageCmdID_CID_MSG_LIST_REQUEST))
+	pdu.SetMsgData(out)
+
 	log.Println("get msg list request")
-	client.request(pdu)
+	client.request(&pdu)
 
 }

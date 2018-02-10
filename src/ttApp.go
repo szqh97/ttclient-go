@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"time"
 )
 
 func main() {
@@ -16,7 +15,7 @@ func main() {
 	msgaddr := ip + ":" + port
 	client := TT.NewClientConn(msgaddr, "dj352801")
 	client.Login()
-	<-time.After(time.Second * 2)
+	client.CheckLoIn()
 
 	//	client.GetRecentSession(0)
 	client.GetUserInfoList([]uint32{12460, 2396, 54555})
