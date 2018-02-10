@@ -59,6 +59,11 @@ func (client *ClientConn) CheckLoIn() {
 }
 
 func (client *ClientConn) writeLoop() {
+	defer func() {
+		recover()
+		log.Println("except occurred in writeloop")
+
+	}()
 	for {
 		select {
 		case pdu := <-client.pduReceiveChan:
@@ -67,12 +72,16 @@ func (client *ClientConn) writeLoop() {
 			if err != nil {
 				fmt.Println("write file failed", cnt, err.Error())
 			}
-		default:
 		}
 	}
 }
 
 func (client *ClientConn) readLoop() {
+	defer func() {
+		recover()
+		log.Println("receving except !!!")
+	}()
+
 	reader := bufio.NewReader(client.conn)
 	log.Println("entering read loop...")
 	for {
@@ -92,8 +101,6 @@ func (client *ClientConn) handleLoop() {
 			client.handlePdu(*pdu)
 		case <-time.After(time.Second * 30):
 			client.heartbeat()
-		default:
-			log.Fatal("unkonw loop...")
 		}
 	}
 }

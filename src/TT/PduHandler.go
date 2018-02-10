@@ -53,6 +53,8 @@ func (client *ClientConn) handlePdu(pdu ImPduBase.ImPdu) {
 		out, _ := json.Marshal(msg)
 		log.Println("get mst list response:")
 		log.Println(string(out))
+	case int32(IM_BaseDefine.OtherCmdID_CID_OTHER_HEARTBEAT):
+		return
 
 	default:
 		log.Println("Invalid commdd id ", pdu.GetCommandId())

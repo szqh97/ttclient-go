@@ -26,7 +26,7 @@ func (client *ClientConn) heartbeat() {
 	pdu.Reset()
 	pdu.SetServiceId(int32(IM_BaseDefine.OtherCmdID_CID_OTHER_HEARTBEAT))
 	pdu.SetCommandId(int32(IM_BaseDefine.OtherCmdID_CID_OTHER_HEARTBEAT))
-	pud.SetMsgData(out)
+	pdu.SetMsgData(out)
 	client.request(&pdu)
 }
 
