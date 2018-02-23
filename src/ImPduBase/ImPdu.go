@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	log "log"
+	"unsafe"
 )
 
 type Header struct {
@@ -24,7 +25,7 @@ func init() {
 }
 
 var (
-	HeaderLen int = binary.Size(Header{})
+	HeaderLen int = int(unsafe.Sizeof(Header{}))
 )
 
 type ImPdu struct {
@@ -63,15 +64,15 @@ func (p *ImPdu) GetMsgData() []byte {
 	}
 	return nil
 }
-func (p *ImPdu) SetServiceId(sid interface{}) {
+func (p *ImPdu) SetServiceId(sid int32) {
 	if p != nil {
-		p.ServiceId = uint16(sid.(int32))
+		p.ServiceId = uint16(sid)
 	}
 }
-func (p *ImPdu) SetCommandId(cid interface{}) {
+func (p *ImPdu) SetCommandId(cid int32) {
 
 	if p != nil {
-		p.CommandId = uint16(cid.(int32))
+		p.CommandId = uint16(cid)
 	}
 }
 func (p *ImPdu) SetMsgData(msg []byte) {
@@ -140,7 +141,7 @@ func ImPduReader(reader io.Reader, pdu *ImPdu) error {
 		data := make([]byte, 1024)
 		cnt, err := reader.Read(data)
 		if err != nil {
-			log.Println(err)
+			log.Fatal(err)
 			return err
 		}
 		fullBuf.Write(data[:cnt])

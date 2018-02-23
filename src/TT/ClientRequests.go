@@ -3,6 +3,7 @@ package TT
 import (
 	"../IM/IM_BaseDefine"
 	"../IM/IM_Buddy"
+	"../IM/IM_Customer"
 	"../IM/IM_Login"
 	"../IM/IM_Message"
 	"../IM/IM_Other"
@@ -133,5 +134,85 @@ func (client *ClientConn) GetMsgList(s_id, msgid, cnt uint32) {
 	pdu.SetMsgData(out)
 
 	log.Println("get msg list request")
+	client.request(&pdu)
+}
+func (client *ClientConn) SendCustomerMsg(customerId, toCustomerId, toSubId uint32) {
+	msgdata := []byte("0gwvBXpM2gamndcPpQ1MKnMrh7eB2LTQ+m7yLHXZ3MQ=")
+	var msgid uint32 = 0
+	var createtm uint32 = 0
+	msgtype := IM_BaseDefine.MsgType_MSG_TYPE_SINGLE_TEXT
+	var msgTypeEx uint32 = 0x21
+	msg := IM_Message.IMMsgData{
+		FromUserId:  &customerId,
+		ToSessionId: &toCustomerId,
+		MsgId:       &msgid,
+		CreateTime:  &createtm,
+		MsgType:     &msgtype,
+		MsgData:     msgdata,
+		MsgTypeEx:   &msgTypeEx,
+		FromSubId:   &client.UserId,
+		ToSubId:     &toSubId,
+	}
+	out, err := proto.Marshal(&msg)
+	checkErr(err)
+
+	var pdu ImPduBase.ImPdu
+	pdu.Reset()
+	pdu.SetServiceId(int32(IM_BaseDefine.ServiceID_SID_MSG))
+	pdu.SetCommandId(int32(IM_BaseDefine.MessageCmdID_CID_MSG_DATA))
+	pdu.SetMsgData(out)
+
+	log.Println("send customer msg")
+	client.request(&pdu)
+}
+
+func (client *ClientConn) GetCustomerInfoReq(queryuserId uint32) {
+	msg := IM_Customer.IMCustomerInfoReq{
+		ReqUserId: &client.UserId,
+		UserId:    &queryuserId,
+	}
+	out, err := proto.Marshal(&msg)
+	checkErr(err)
+	var pdu ImPduBase.ImPdu
+	pdu.Reset()
+	pdu.SetServiceId(int32(IM_BaseDefine.ServiceID_SID_CUSTOMER))
+	pdu.SetCommandId(int32(IM_BaseDefine.CustomerCmdId_CID_CUSTOMER_CUSTOMER_INFO_REQ))
+	pdu.SetMsgData(out)
+	log.Println("get customer info req")
+	client.request(&pdu)
+}
+
+func (client *ClientConn) GetForwardingUserListReq(customerId uint32) {
+	msg := IM_Customer.IMGetForwardingUserListReq{
+		ReqUserId:  &client.UserId,
+		CustomerId: &customerId,
+	}
+
+	out, err := proto.Marshal(&msg)
+	checkErr(err)
+	var pdu ImPduBase.ImPdu
+	pdu.Reset()
+	pdu.SetServiceId(int32(IM_BaseDefine.ServiceID_SID_CUSTOMER))
+	pdu.SetCommandId(int32(IM_BaseDefine.CustomerCmdId_CID_CUSTOMER_GET_FORWORDING_LIST_REQ))
+	pdu.SetMsgData(out)
+	log.Println("get customer forwarding list req")
+	client.request(&pdu)
+}
+
+func (client *ClientConn) CustomerFowardingReq(customerId, fromId, toSubId uint32) {
+	msg := IM_Customer.IMCustomerForwardingReq{
+		ReqUserId:  &client.UserId,
+		CustomerId: &customerId,
+		FromId:     &fromId,
+		ToSubId:    &toSubId,
+	}
+	out, err := proto.Marshal(&msg)
+	checkErr(err)
+	var pdu ImPduBase.ImPdu
+	pdu.Reset()
+	pdu.SetServiceId(int32(IM_BaseDefine.ServiceID_SID_CUSTOMER))
+	pdu.SetCommandId(int32(IM_BaseDefine.CustomerCmdId_CID_CUSTOMER_FORWORDING_REQ))
+	pdu.SetMsgData(out)
+	log.Println("forwarding msg req")
 	client.request(&pdu)
 }

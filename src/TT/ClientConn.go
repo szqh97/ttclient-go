@@ -50,10 +50,10 @@ func NewClientConn(MsgAddr, UserName string) *ClientConn {
 
 	return &client
 }
-func (client *ClientConn) CheckLoIn() {
+func (client *ClientConn) CheckLogIn() {
 	select {
 	case <-client.loginChan:
-		log.Printf("client %v logged in...")
+		log.Printf("client %v logged in...", client)
 	}
 
 }
